@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <conio.h>
 #include <math.h>
 #include <string.h>
@@ -60,20 +61,19 @@ void nhapMotNhanVien(nhanVien *nv)
 {
     printf("\nMoi ban nhap ma so nhan vien: ");
     scanf("%d", &nv->msnv);
-    // Xóa bộ đệm đầu vào trước khi đến dòng nhập tiếp theo
     fflush(stdin);
     printf("\nMoi ban nhap ho nhan vien: ");
-    scanf("%s", &nv->ho);
+    gets(nv->ho);
     fflush(stdin);
     printf("\nMoi ban nhap ten nhan vien: ");
-    scanf("%s", &nv->ten);
+    gets(nv->ten);
     fflush(stdin);
     nhapNgayThang(&nv->namSinh);
     printf("\nMoi ban nhap noi sinh nhan vien: ");
-    scanf("%s", &nv->noiSinh);
+    gets(nv->noiSinh);
     fflush(stdin);
     printf("\nMoi ban nhap dia chi nhan vien: ");
-    scanf("%s", &nv->diaChi);
+    gets(nv->diaChi);
     fflush(stdin);
     printf("\nMoi ban nhap luong nhan vien: ");
     scanf("%f", &nv->luong);
@@ -83,22 +83,9 @@ void nhapMotNhanVien(nhanVien *nv)
 
 void themNhanVien(danhSach *ds, int viTriThem, nhanVien giaTriThem)
 {
-    if (ds->n >= sl)
+    for (int i = ds->n - 1; i >= viTriThem; i--)
     {
-        printf("\nDanh sach da day, khong the them nhan vien!");
-        return;
-    }
-    if (viTriThem < 0 || viTriThem > ds->n)
-    {
-        printf("Vi tri them khong hop le!");
-        return;
-    }
-    if (viTriThem < ds->n)
-    {
-        for (int i = ds->n; i > viTriThem; i--)
-        {
-            ds->a[i] = ds->a[i - 1];
-        }
+        ds->a[i + 1] = ds->a[i];
     }
     ds->a[viTriThem] = giaTriThem;
     ds->n++;
@@ -174,36 +161,37 @@ int timMSNV(danhSach ds, int d)
 }
 
 // method xóa nhân viên
-void xoanv(danhSach ds, int d)
+void xoanv(danhSach *ds, int d)
 {
-    for (int i = 0; i < ds.n; i++)
+    for (int i = 0; i < ds->n; i++)
     {
-        if (ds.a[i].msnv == d)
+        if (ds->a[i].msnv == d)
         {
-            for (int j = 0; i < ds.n - 1; i++)
+            for (int j = i; j < ds->n - 1; j++)
             {
-                ds.a[j] = ds.a[j + 1];
+                ds->a[j] = ds->a[j + 1];
             }
-            ds.n--;
-            printf("Da xoa nhan vien co ma so %d", d);
+            ds->n--;
+            printf("\nDa xoa nhan vien co ma so %d", d);
             return;
         }
     }
+    printf("\nKhong tim thay nhan vien co ma so %d", d);
 }
 
 // method sắp xếp nhân viên
-void sapXep(danhSach ds)
+void sapXep(danhSach *ds)
 {
     nhanVien temp;
-    for (int i = 0; i < ds.n - 1; i++)
+    for (int i = 0; i < ds->n - 1; i++)
     {
-        for (int j = 0; j < ds.n - i - 1; j++)
+        for (int j = 0; j < ds->n - i - 1; j++)
         {
-            if (ds.a[j].luong < ds.a[j + 1].luong)
+            if (ds->a[j].luong < ds->a[j + 1].luong)
             {
-                temp = ds.a[j];
-                ds.a[j] = ds.a[j + 1];
-                ds.a[j + 1] = temp;
+                temp = ds->a[j];
+                ds->a[j] = ds->a[j + 1];
+                ds->a[j + 1] = temp;
             }
         }
     }
@@ -212,72 +200,76 @@ void sapXep(danhSach ds)
 // khai báo menu
 void menu()
 {
-    do
-    {
-        int ch;
-        int d, k;
-        nhanVien nv;
-        danhSach ds;
-        printf("\n\t\t================MENU================");
-        printf("\n\t1. Them Vao Mot Nhan Vien");
-        printf("\n\t2. Tim nhan vien theo ma so");
-        printf("\n\t3.Tim nhan vien theo ten ");
-        printf("\n\t4.bang luong cua nhan vien giam dan");
-        printf("\n\t5.xoa mot nhan vien");
-        printf("\n ****************************************");
-        printf("\n\t Chon 1 trong cac chuc nang tren: ");
-        scanf("%d", &ch);
-        switch (ch)
-        {
-        case 1:
-            printf("\n\tBan da lua chon chuc nang 1\n");
-            nhapDanhSach(&ds);
-            // printf("Moi ban nhap vi tri them:");
-            // scanf("%d", &k);
-            // themNhanVien(&ds, k, nv);
-            xuatDanhSach(ds);
-            break;
-        case 2:
-            printf("\n\tBan da lua chon chuc nang 2\n");
-            scanf("%d", &d);
-            k = timMSNV(ds, d);
-            if (k == -1)
-            {
-                printf("\n khong tim thay nhan vien co ma la %d", d);
-            }
-            else
-            {
-                xuatMotNhanVien(ds.a[k]);
-            }
 
-            break;
-        case 3:
-            printf("\n\tBan da lua chon chuc nang 3\n");
-            timTen(ds);
-            break;
-        case 4:
-            printf("\n\tBan da lua chon chuc nang 4\n");
-            sapXep(ds);
-            xuatDanhSach(ds);
-            break;
-        case 5:
-            printf("\n\tBan da lua chon chuc nang 5\n");
-            printf("Moi ban nhap nhan vien can xoa:");
-            scanf("%d", &d);
-            xoanv(ds, d);
-            xuatDanhSach(ds);
-            break;
-        case 0:
-            printf("\nHen Gap Lai ban lan sau \n");
-            return;
-        default:
-            printf("Ban chua lua chon chuong trinh\n");
-            break;
+    int ch;
+    int d, k;
+    nhanVien nv;
+    danhSach ds;
+    printf("\n\t\t================MENU================");
+    printf("\n\t1. Them Vao Mot Nhan Vien");
+    printf("\n\t2. Tim nhan vien theo ma so");
+    printf("\n\t3.Tim nhan vien theo ten ");
+    printf("\n\t4.bang luong cua nhan vien giam dan");
+    printf("\n\t5.xoa mot nhan vien");
+    printf("\n ****************************************");
+    printf("\n\t Chon 1 trong cac chuc nang tren: ");
+    scanf("%d", &ch);
+    switch (ch)
+    {
+    case 1:
+        printf("\n\tBan da lua chon chuc nang 1\n");
+        nhapDanhSach(&ds);
+        nhapMotNhanVien(&nv);
+        printf("Moi ban nhap vi tri them:");
+        scanf("%d", &k);
+        themNhanVien(&ds, k, nv);
+        xuatDanhSach(ds);
+        break;
+    case 2:
+        printf("\n\tBan da lua chon chuc nang 2\n");
+        printf("\nMoi ban nhap ma so nhan vien can tim");
+        scanf("%d", &d);
+        k = timMSNV(ds, d);
+        if (k == -1)
+        {
+            printf("\n khong tim thay nhan vien co ma la %d", d);
         }
-    } while (1);
+        else
+        {
+            xuatMotNhanVien(ds.a[k]);
+        }
+
+        break;
+    case 3:
+        printf("\n\tBan da lua chon chuc nang 3\n");
+        timTen(ds);
+        break;
+    case 4:
+        printf("\n\tBan da lua chon chuc nang 4\n");
+        sapXep(&ds);
+        xuatDanhSach(ds);
+        break;
+    case 5:
+        printf("\n\tBan da lua chon chuc nang 5\n");
+        printf("Moi ban nhap nhan vien can xoa:");
+        scanf("%d", &d);
+        xoanv(&ds, d);
+        xuatDanhSach(ds);
+        break;
+    case 0:
+        printf("\nHen Gap Lai ban lan sau \n");
+        return;
+    default:
+        printf("Ban chua lua chon chuong trinh\n");
+        break;
+    }
 }
 
 int main()
 {
-    menu();
+    while (1)
+    {
+        menu();
+    }
+    return 0;
 }
